@@ -1,241 +1,485 @@
+
 // import React, { useState } from "react";
-// import { Image as ImageIcon, PlusCircle, Smile } from "lucide-react";
-// import EmojiPicker from "emoji-picker-react";
+// import { useAuth } from "../Context/AuthContext";
+// import { createPost } from "../services/postServices";
+// import { uploadToCloudinary } from "../services/cloudinary";
 
-// export default function CreatePost() {
+// const AddPostPage = () => {
+//   const { token } = useAuth();
+
 //   const [title, setTitle] = useState("");
-//   const [content, setContent] = useState("");
-//   const [image, setImage] = useState(null);
-//   const [sections, setSections] = useState([""]);
-//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+//   const [description, setDescription] = useState("");
+//   const [imageFile, setImageFile] = useState(null);
+//   const [contentText, setContentText] = useState(""); // <-- now using string
+//   const [isLoading, setIsLoading] = useState(false);
 
-//   const handleImageChange = (e) => {
-//     const file = e.target.files[0];
-//     if (file) {
-//       setImage(URL.createObjectURL(file));
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!imageFile || !contentText) {
+//       alert("Please provide an image and post content.");
+//       return;
+//     }
+
+//     setIsLoading(true);
+
+//     try {
+//       const postImg = await uploadToCloudinary(imageFile, "image");
+
+//       // Convert content text to a Blob and then to a File
+//       const contentBlob = new Blob([contentText], { type: "text/plain" });
+//       const contentFile = new File([contentBlob], "postContent.txt", {
+//         type: "text/plain",
+//       });
+
+//       const contentUrl = await uploadToCloudinary(contentFile, "raw");
+
+//       const payload = {
+//         title,
+//         description,
+//         postImg,
+//         contentUrl,
+//       };
+
+//       console.log("Payload:", payload);
+
+//       const response = await createPost(payload, token);
+//       console.log("Post created successfully:", response);
+//       alert("Post created!");
+//     } catch (error) {
+//       console.error("Upload error:", error);
+//       alert("Something went wrong.");
+//     } finally {
+//       setIsLoading(false);
 //     }
 //   };
 
-//   const addSection = () => {
-//     setSections([...sections, ""]);
-//   };
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <h2>Add New Post</h2>
 
-//   const handleSectionChange = (index, value) => {
-//     const updated = [...sections];
-//     updated[index] = value;
-//     setSections(updated);
-//   };
+//       <div>
+//         <label>Title:</label>
+//         <input
+//           type="text"
+//           value={title}
+//           onChange={(e) => setTitle(e.target.value)}
+//           required
+//         />
+//       </div>
 
-//   const handleEmojiClick = (emojiData) => {
-//     setContent((prev) => prev + emojiData.emoji);
-//   };
+//       <div>
+//         <label>Description:</label>
+//         <textarea
+//           value={description}
+//           onChange={(e) => setDescription(e.target.value)}
+//           required
+//         />
+//       </div>
 
-//   const handleSubmit = () => {
-//     console.log({ title, content, image, sections });
+//       <div>
+//         <label>Post Image:</label>
+//         <input
+//           type="file"
+//           accept="image/*"
+//           onChange={(e) => setImageFile(e.target.files[0])}
+//           required
+//         />
+//       </div>
+
+//       <div>
+//         <label>Post Content:</label>
+//         <textarea
+//           rows={10}
+//           value={contentText}
+//           onChange={(e) => setContentText(e.target.value)}
+//           placeholder="Enter post content here..."
+//           required
+//         />
+//       </div>
+
+//       <button type="submit" disabled={isLoading}>
+//         {isLoading ? "Uploading..." : "Submit Post"}
+//       </button>
+//     </form>
+//   );
+// };
+
+// export default AddPostPage;
+
+
+
+// import React, { useState } from "react";
+// import { useAuth } from "../Context/AuthContext";
+// import { createPost } from "../services/postServices";
+// import { uploadToCloudinary } from "../services/cloudinary";
+
+// const AddPostPage = () => {
+//   const { token } = useAuth();
+
+//   const [title, setTitle] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [imageFile, setImageFile] = useState(null);
+//   const [contentText, setContentText] = useState("");
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!imageFile || !contentText) {
+//       alert("Please provide an image and post content.");
+//       return;
+//     }
+
+//     setIsLoading(true);
+
+//     try {
+//       const postImg = await uploadToCloudinary(imageFile, "image");
+
+//       const contentBlob = new Blob([contentText], { type: "text/plain" });
+//       const contentFile = new File([contentBlob], "postContent.txt", {
+//         type: "text/plain",
+//       });
+
+//       const contentUrl = await uploadToCloudinary(contentFile, "raw");
+
+//       const payload = {
+//         title,
+//         description,
+//         postImg,
+//         contentUrl,
+//       };
+
+//       const response = await createPost(payload, token);
+//       alert("Post created!");
+//     } catch (error) {
+//       console.error("Upload error:", error);
+//       alert("Something went wrong.");
+//     } finally {
+//       setIsLoading(false);
+//     }
 //   };
 
 //   return (
-//     <div className="h-screen w-screen bg-gray-100 m-0 p-0">
-//       <div className="h-full w-full p-6 bg-blue-100 shadow-inner rounded-none">
-//         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-800 text-center">
-//           Create a New Post
-//         </h2>
+//     <div className="max-w-3xl mx-auto px-4 py-10">
+//       <form
+//         onSubmit={handleSubmit}
+//         className="bg-white shadow-md rounded-lg p-8 space-y-6"
+//       >
+//         <h2 className="text-3xl font-bold text-gray-800">Create New Post</h2>
 
-//         <input
-//           type="text"
-//           placeholder="Post Title"
-//           className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring"
-//           value={title}
-//           onChange={(e) => setTitle(e.target.value)}
-//         />
-
-//         <div className="relative">
-//           <textarea
-//             placeholder="What's on your mind?"
-//             className="w-full mb-4 p-3 border rounded-lg h-32 resize-none focus:outline-none focus:ring"
-//             value={content}
-//             onChange={(e) => setContent(e.target.value)}
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">Title</label>
+//           <input
+//             type="text"
+//             value={title}
+//             onChange={(e) => setTitle(e.target.value)}
+//             required
+//             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
 //           />
-
-//           <button
-//             type="button"
-//             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-//             className="absolute top-2 right-2 text-yellow-500"
-//           >
-//             <Smile size={24} />
-//           </button>
-
-//           {showEmojiPicker && (
-//             <div className="absolute top-14 right-0 z-50">
-//               <EmojiPicker onEmojiClick={handleEmojiClick} />
-//             </div>
-//           )}
 //         </div>
 
-//         {image && (
-//           <div className="mb-4">
-//             <img src={image} alt="Preview" className="max-h-60 rounded-lg" />
-//           </div>
-//         )}
-
-//         <div className="flex items-center gap-4 mb-4">
-//           <label className="flex items-center gap-2 cursor-pointer text-blue-600">
-//             <ImageIcon size={20} />
-//             <input type="file" className="hidden" onChange={handleImageChange} />
-//             Add Image
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">
+//             Description
 //           </label>
-
-//           <button
-//             onClick={addSection}
-//             className="flex items-center gap-1 text-green-600"
-//           >
-//             <PlusCircle size={20} />
-//             Add Section
-//           </button>
+//           <textarea
+//             value={description}
+//             onChange={(e) => setDescription(e.target.value)}
+//             required
+//             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+//           />
 //         </div>
 
-//         {sections.map((section, idx) => (
-//           <textarea
-//             key={idx}
-//             placeholder={`Section ${idx + 1}`}
-//             className="w-full mb-4 p-3 border rounded-lg h-24 resize-none focus:outline-none focus:ring"
-//             value={section}
-//             onChange={(e) => handleSectionChange(idx, e.target.value)}
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">
+//             Post Image
+//           </label>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={(e) => setImageFile(e.target.files[0])}
+//             required
+//             className="w-full"
 //           />
-//         ))}
+//         </div>
+
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">
+//             Post Content
+//           </label>
+//           <textarea
+//             rows={15}
+//             value={contentText}
+//             onChange={(e) => setContentText(e.target.value)}
+//             placeholder="Write your story here..."
+//             required
+//             className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+//           />
+//         </div>
 
 //         <button
-//           onClick={handleSubmit}
-//           className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition"
+//           type="submit"
+//           disabled={isLoading}
+//           className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition"
 //         >
-//           Publish Post
+//           {isLoading ? "Uploading..." : "Publish"}
 //         </button>
-//       </div>
+//       </form>
 //     </div>
 //   );
-// }
+// };
+
+// export default AddPostPage;
+
+
+
+// import 'react-quill/dist/quill.snow.css';
+// import React, { useState } from "react";
+// import ReactQuill from "react-quill";
+// import 'react-quill/dist/quill.snow.css';
+// import { useAuth } from "../Context/AuthContext";
+// import { createPost } from "../services/postServices";
+// import { uploadToCloudinary } from "../services/cloudinary";
+
+// const AddPostPage = () => {
+//   const { token } = useAuth();
+
+//   const [title, setTitle] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [imageFile, setImageFile] = useState(null);
+//   const [contentText, setContentText] = useState(""); // now HTML from Quill
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!imageFile || !contentText) {
+//       alert("Please provide an image and post content.");
+//       return;
+//     }
+
+//     setIsLoading(true);
+
+//     try {
+//       const postImg = await uploadToCloudinary(imageFile, "image");
+
+//       const contentBlob = new Blob([contentText], { type: "text/html" });
+//       const contentFile = new File([contentBlob], "postContent.html", {
+//         type: "text/html",
+//       });
+
+//       const contentUrl = await uploadToCloudinary(contentFile, "raw");
+
+//       const payload = {
+//         title,
+//         description,
+//         postImg,
+//         contentUrl,
+//       };
+
+//       const response = await createPost(payload, token);
+//       alert("Post created!");
+//     } catch (error) {
+//       console.error("Upload error:", error);
+//       alert("Something went wrong.");
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="max-w-3xl mx-auto px-4 py-10">
+//       <form
+//         onSubmit={handleSubmit}
+//         className="bg-white shadow-md rounded-lg p-8 space-y-6"
+//       >
+//         <h2 className="text-3xl font-bold text-gray-800">Create New Post</h2>
+
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">Title</label>
+//           <input
+//             type="text"
+//             value={title}
+//             onChange={(e) => setTitle(e.target.value)}
+//             required
+//             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">
+//             Description
+//           </label>
+//           <textarea
+//             value={description}
+//             onChange={(e) => setDescription(e.target.value)}
+//             required
+//             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">
+//             Post Image
+//           </label>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={(e) => setImageFile(e.target.files[0])}
+//             required
+//             className="w-full"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block mb-2 font-medium text-gray-700">
+//             Post Content
+//           </label>
+//           <ReactQuill
+//             value={contentText}
+//             onChange={setContentText}
+//             theme="snow"
+//             className="bg-white h-72" // Tailwind: h-72 = 18rem = 288px
+//             placeholder="Write your story here..."
+//           />
+//         </div>
+
+//         <button
+//           type="submit"
+//           disabled={isLoading}
+//           className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition"
+//         >
+//           {isLoading ? "Uploading..." : "Publish"}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default AddPostPage;
+
+
 
 import React, { useState } from "react";
-import { Image as ImageIcon, PlusCircle, Smile } from "lucide-react";
-import EmojiPicker from "emoji-picker-react";
+import { useAuth } from "../Context/AuthContext";
+import { createPost } from "../services/postServices";
+import { uploadToCloudinary } from "../services/cloudinary";
 
-export default function CreatePost() {
+const AddPostPage = () => {
+  const { token } = useAuth();
+
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
-  const [sections, setSections] = useState([""]);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [description, setDescription] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [contentText, setContentText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!imageFile || !contentText) {
+      alert("Please provide an image and post content.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const postImg = await uploadToCloudinary(imageFile, "image");
+
+      const contentBlob = new Blob([contentText], { type: "text/plain" });
+      const contentFile = new File([contentBlob], "postContent.txt", {
+        type: "text/plain",
+      });
+
+      const contentUrl = await uploadToCloudinary(contentFile, "raw");
+
+      const payload = {
+        title,
+        description,
+        postImg,
+        contentUrl,
+      };
+
+      const response = await createPost(payload, token);
+      alert("Post created!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Something went wrong.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const addSection = () => {
-    setSections([...sections, ""]);
-  };
-
-  const handleSectionChange = (index, value) => {
-    const updated = [...sections];
-    updated[index] = value;
-    setSections(updated);
-  };
-
-  const handleEmojiClick = (emojiData) => {
-    setContent((prev) => prev + emojiData.emoji);
-  };
-
-  const handleSubmit = () => {
-    console.log({ title, content, image, sections });
-  };
-
   return (
-    <div className="relative min-h-screen">
-      {/* Top Half Blue */}
-      <div className="absolute top-0 left-0 w-full h-1/2 bg-[#4169f5] z-0" />
-      {/* Bottom Half Light Blue */}
-      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-[#dbe8ff] z-0" />
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-8 space-y-6"
+      >
+        <h2 className="text-3xl font-bold text-gray-800">Create New Post</h2>
 
-      {/* Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
-        <div className="w-full max-w-4xl bg-white p-8 rounded-3xl shadow-xl overflow-hidden">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-800 text-center">
-            Create a New Post
-          </h2>
-
+        <div>
+          <label className="block mb-2 font-medium text-gray-700">Title</label>
           <input
             type="text"
-            placeholder="Post Title"
-            className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
-
-          <div className="relative">
-            <textarea
-              placeholder="What's on your mind?"
-              className="w-full mb-4 p-3 border rounded-lg h-32 resize-none focus:outline-none focus:ring"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className="absolute top-2 right-2 text-yellow-500"
-            >
-              <Smile size={24} />
-            </button>
-
-            {showEmojiPicker && (
-              <div className="absolute top-14 right-0 z-50">
-                <EmojiPicker onEmojiClick={handleEmojiClick} />
-              </div>
-            )}
-          </div>
-
-          {image && (
-            <div className="mb-4">
-              <img src={image} alt="Preview" className="max-h-60 rounded-lg" />
-            </div>
-          )}
-
-          <div className="flex items-center gap-4 mb-4">
-            <label className="flex items-center gap-2 cursor-pointer text-blue-600">
-              <ImageIcon size={20} />
-              <input type="file" className="hidden" onChange={handleImageChange} />
-              Add Image
-            </label>
-
-            <button
-              onClick={addSection}
-              className="flex items-center gap-1 text-green-600"
-            >
-              <PlusCircle size={20} />
-              Add Section
-            </button>
-          </div>
-
-          {sections.map((section, idx) => (
-            <textarea
-              key={idx}
-              placeholder={`Section ${idx + 1}`}
-              className="w-full mb-4 p-3 border rounded-lg h-24 resize-none focus:outline-none focus:ring"
-              value={section}
-              onChange={(e) => handleSectionChange(idx, e.target.value)}
-            />
-          ))}
-
-          <button
-            onClick={handleSubmit}
-            className="w-full bg-[#4169f5] text-white py-3 rounded-xl hover:bg-blue-700 transition"
-          >
-            Publish Post
-          </button>
         </div>
-      </div>
+
+        <div>
+          <label className="block mb-2 font-medium text-gray-700">
+            Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium text-gray-700">
+            Post Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            required
+            className="w-full"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium text-gray-700">
+            Post Content
+          </label>
+          <textarea
+            rows={15}
+            value={contentText}
+            onChange={(e) => setContentText(e.target.value)}
+            placeholder="Write your story here..."
+            required
+            className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition"
+        >
+          {isLoading ? "Uploading..." : "Publish"}
+        </button>
+      </form>
     </div>
   );
-}
+};
+
+export default AddPostPage;

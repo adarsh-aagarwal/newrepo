@@ -12,7 +12,7 @@ import About from "./Components/About";
 import ContactUs from "./Components/ContactUs";
 import Privacy from "./Components/Privacy";
 import ProfileP from "./Components/ProfileP";
-
+import SearchResults from "./Components/SearchResults";
 function App() {
   return (
     
@@ -29,6 +29,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/search" element={<SearchResults />} />
         </Route>
       </Routes>
      

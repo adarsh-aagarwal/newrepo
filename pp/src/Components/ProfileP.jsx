@@ -1,91 +1,37 @@
 
 
 
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { useAuth } from "../Context/AuthContext";
-
-// const ProfilePage = () => {
-//   const { token } = useAuth();
-//   const [user, setUser] = useState(null);
-//   const [error, setError] = useState("");
-
-//   useEffect(() => {
-//     const fetchUser = async () => {
-//       try {
-//         const res = await axios.get("http://localhost:8080/api/users/me", {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-//         setUser(res.data);
-//       } catch (err) {
-//         setError("Failed to load user data.");
-//         console.error(err);
-//       }
-//     };
-
-//     if (token) {
-//       fetchUser();
-//     }
-//   }, [token]);
-
-//   return (
-//     <div className="relative min-h-screen bg-gradient-to-b from-[#4169f5] to-[#dbe8ff] flex items-center justify-center px-4">
-//       <div className="bg-white rounded-[2rem] shadow-xl p-10 w-full max-w-2xl">
-//         <h2 className="text-3xl font-bold text-center mb-8 text-[#4169f5]">
-//           Profile Information
-//         </h2>
-
-//         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-//         {user ? (
-//           <div className="space-y-6">
-//             <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-//               <div className="h-28 w-28 bg-[#f2f2f2] rounded-full flex items-center justify-center text-4xl text-blue-500 font-bold">
-//                 {user.name ? user.name.charAt(0).toUpperCase() : "U"}
-//               </div>
-//               <div>
-//                 <h3 className="text-xl font-semibold text-gray-800">{user.name}</h3>
-//                 <p className="text-sm text-gray-500">{user.email}</p>
-//               </div>
-//             </div>
-
-//             <div className="mt-10 text-sm text-center text-gray-500">
-//               (Profile picture upload feature coming soon)
-//             </div>
-//           </div>
-//         ) : (
-//           <p className="text-center text-gray-600">Loading...</p>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProfilePage;
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import {
+  PhotoIcon,
+  BookmarkIcon,
+  ArrowRightOnRectangleIcon,
+  PowerIcon 
+} from "@heroicons/react/24/outline";
 
 const ProfilePage = () => {
   const { token, logout } = useAuth();
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
+  const [selectedTab, setSelectedTab] = useState("posts");
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
         const res = await axios.get("http://localhost:8080/api/users/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(res);
+        
         setUser(res.data);
+        setPosts(res.data.posts);
       } catch (err) {
         setError("Failed to load user data.");
         console.error(err);
@@ -93,54 +39,112 @@ const ProfilePage = () => {
     };
 
     if (token) {
-      fetchUser();
+      fetchUserData();
     } else {
-      setUser(null); // Clear user data if no token
+      setUser(null);
     }
-  }, [token]); // This effect will run whenever `token` changes
+  }, [token]);
 
   const handleLogout = () => {
-    logout(); // This will clear the token in AuthContext and update the state
-    navigate("/signin"); // Redirect user to login page after logout
+    logout();
+    navigate("/signin");
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#4169f5] to-[#dbe8ff] flex items-center justify-center px-4">
-      <div className="bg-white rounded-[2rem] shadow-xl p-10 w-full max-w-2xl">
-        <h2 className="text-3xl font-bold text-center mb-8 text-[#4169f5]">
-          Profile Information
-        </h2>
+    <div className="min-h-screen w-full px-4 py-10 relative">
+      {/* Logout Icon Button at Top Left */}
+      <button
+  onClick={handleLogout}
+  className="absolute top-10 right-60 text-gray-600 hover:text-red-500 transition"
+  title="Logout"
+>
+  <ArrowRightOnRectangleIcon className="h-7 w-7" />
+</button>
 
+      <div className="max-w-4xl mx-auto w-full">
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         {user ? (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-              <div className="h-28 w-28 bg-[#f2f2f2] rounded-full flex items-center justify-center text-4xl text-blue-500 font-bold">
+          <>
+            {/* Profile Info */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+              <div className="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center text-5xl font-bold text-blue-500">
                 {user.name ? user.name.charAt(0).toUpperCase() : "U"}
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800">{user.name}</h3>
-                <p className="text-sm text-gray-500">{user.email}</p>
+              <div className="text-center sm:text-left">
+                <h3 className="text-2xl font-semibold text-gray-800">{user.name}</h3>
+                <p className="text-gray-500">{user.email}</p>
+                {user.bio?<p></p>:<p>Add bio</p>}
               </div>
             </div>
 
-            <div className="mt-10 text-sm text-center text-gray-500">
-              (Profile picture upload feature coming soon)
-            </div>
-
-            {/* Logout Button */}
-            <div className="text-center mt-6">
+            {/* Tabs */}
+            <div className="flex justify-center gap-8 border-t border-gray-300 pt-4 mb-8">
               <button
-                onClick={handleLogout}
-                className="bg-[#4169f5] text-white py-2 px-4 rounded-md hover:bg-[#2f50c1]"
+                onClick={() => setSelectedTab("posts")}
+                className={`flex items-center gap-2 px-4 py-2 font-semibold ${
+                  selectedTab === "posts"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500"
+                }`}
               >
-                Logout
+                <PhotoIcon className="h-5 w-5" />
+                Posts
+              </button>
+              <button
+                onClick={() => setSelectedTab("saved")}
+                className={`flex items-center gap-2 px-4 py-2 font-semibold ${
+                  selectedTab === "saved"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500"
+                }`}
+              >
+                <BookmarkIcon className="h-5 w-5" />
+                Saved
               </button>
             </div>
-          </div>
+
+            {/* Posts */}
+            {selectedTab === "posts" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.length > 0 ? (
+                  posts.map((post) => (
+                    <div
+                    key={post.id}
+                    className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg"
+                  >
+                      <img
+                        src={post.postImg}
+                        alt={post.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4">
+                        <h4 className="text-lg font-semibold">{post.title}</h4>
+                        <p className="text-sm text-gray-500">{post.description}</p>
+                        <a
+                          href={post.contentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 text-sm mt-2 inline-block"
+                        >
+                          View Content
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500 w-full">No posts yet.</p>
+                )}
+              </div>
+            )}
+
+            {/* Saved (Empty for now) */}
+            {selectedTab === "saved" && (
+              <div className="text-center text-gray-500">No saved posts yet.</div>
+            )}
+          </>
         ) : (
-          <p className="text-center text-gray-600">Login To See Your Profile Details</p>
+          <p className="text-center text-gray-600">Login to see your profile details</p>
         )}
       </div>
     </div>
@@ -148,3 +152,205 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+
+
+
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import { useAuth } from "../Context/AuthContext";
+// import { useNavigate } from "react-router-dom";
+// import {
+//   PhotoIcon,
+//   BookmarkIcon,
+//   ArrowRightOnRectangleIcon,
+// } from "@heroicons/react/24/outline";
+
+// const ProfilePage = () => {
+//   const { token, logout } = useAuth();
+//   const [user, setUser] = useState(null);
+//   const [error, setError] = useState("");
+//   const [posts, setPosts] = useState([]);
+//   const [savedPosts, setSavedPosts] = useState([]);
+//   const [selectedTab, setSelectedTab] = useState("posts");
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchUserData = async () => {
+//       try {
+//         const res = await axios.get("http://localhost:8080/api/users/me", {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//         console.log(res);
+        
+//         setUser(res.data);
+//         setPosts(res.data.posts);
+//       } catch (err) {
+//         setError("Failed to load user data.");
+//         console.error(err);
+//       }
+//     };
+
+//     if (token) {
+//       fetchUserData();
+//     } else {
+//       setUser(null);
+//     }
+//   }, [token]);
+
+//   useEffect(() => {
+//     const fetchSavedPosts = async () => {
+//       try {
+//         const res = await axios.get("http://localhost:8080/saved-posts", {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//         setSavedPosts(res.data);
+//       } catch (err) {
+//         console.error("Error fetching saved posts:", err);
+//       }
+//     };
+
+//     if (selectedTab === "saved") {
+//       fetchSavedPosts();
+//     }
+//   }, [selectedTab, token]);
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate("/signin");
+//   };
+
+//   return (
+//     <div className="min-h-screen w-full px-4 py-10 relative">
+//       {/* Logout Icon Button */}
+//       <button
+//         onClick={handleLogout}
+//         className="absolute top-10 right-60 text-gray-600 hover:text-red-500 transition"
+//         title="Logout"
+//       >
+//         <ArrowRightOnRectangleIcon className="h-7 w-7" />
+//       </button>
+
+//       <div className="max-w-4xl mx-auto w-full">
+//         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+//         {user ? (
+//           <>
+//             {/* Profile Info */}
+//             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+//               <div className="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center text-5xl font-bold text-blue-500">
+//                 {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+//               </div>
+//               <div className="text-center sm:text-left">
+//                 <h3 className="text-2xl font-semibold text-gray-800">{user.name}</h3>
+//                 <p className="text-gray-500">{user.email}</p>
+//                 {user.bio ? <p>{user.bio}</p> : <p className="text-sm text-gray-400">Add a bio</p>}
+//               </div>
+//             </div>
+
+//             {/* Tabs */}
+//             <div className="flex justify-center gap-8 border-t border-gray-300 pt-4 mb-8">
+//               <button
+//                 onClick={() => setSelectedTab("posts")}
+//                 className={`flex items-center gap-2 px-4 py-2 font-semibold ${
+//                   selectedTab === "posts"
+//                     ? "text-blue-600 border-b-2 border-blue-600"
+//                     : "text-gray-500"
+//                 }`}
+//               >
+//                 <PhotoIcon className="h-5 w-5" />
+//                 Posts
+//               </button>
+//               <button
+//                 onClick={() => setSelectedTab("saved")}
+//                 className={`flex items-center gap-2 px-4 py-2 font-semibold ${
+//                   selectedTab === "saved"
+//                     ? "text-blue-600 border-b-2 border-blue-600"
+//                     : "text-gray-500"
+//                 }`}
+//               >
+//                 <BookmarkIcon className="h-5 w-5" />
+//                 Saved
+//               </button>
+//             </div>
+
+//             {/* Posts */}
+//             {selectedTab === "posts" && (
+//               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//                 {posts.length > 0 ? (
+//                   posts.map((post) => (
+//                     <div
+//                       key={post.id}
+//                       className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg"
+//                     >
+//                       <img
+//                         src={post.postImg}
+//                         alt={post.title}
+//                         className="w-full h-48 object-cover"
+//                       />
+//                       <div className="p-4">
+//                         <h4 className="text-lg font-semibold">{post.title}</h4>
+//                         <p className="text-sm text-gray-500">{post.description}</p>
+//                         <a
+//                           href={post.contentUrl}
+//                           target="_blank"
+//                           rel="noopener noreferrer"
+//                           className="text-blue-500 text-sm mt-2 inline-block"
+//                         >
+//                           View Content
+//                         </a>
+//                       </div>
+//                     </div>
+//                   ))
+//                 ) : (
+//                   <p className="text-center text-gray-500 w-full">No posts yet.</p>
+//                 )}
+//               </div>
+//             )}
+
+//             {/* Saved Posts */}
+//             {selectedTab === "saved" && (
+//               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//                 {savedPosts.length > 0 ? (
+//                   savedPosts.map((post) => (
+//                     <div
+//                       key={post.id}
+//                       className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg"
+//                     >
+//                       <img
+//                         src={post.postImg}
+//                         alt={post.title}
+//                         className="w-full h-48 object-cover"
+//                       />
+//                       <div className="p-4">
+//                         <h4 className="text-lg font-semibold">{post.title}</h4>
+//                         <p className="text-sm text-gray-500">{post.description}</p>
+//                         <a
+//                           href={post.contentUrl}
+//                           target="_blank"
+//                           rel="noopener noreferrer"
+//                           className="text-blue-500 text-sm mt-2 inline-block"
+//                         >
+//                           View Content
+//                         </a>
+//                       </div>
+//                     </div>
+//                   ))
+//                 ) : (
+//                   <p className="text-center text-gray-500 w-full">No saved posts yet.</p>
+//                 )}
+//               </div>
+//             )}
+//           </>
+//         ) : (
+//           <p className="text-center text-gray-600">Login to see your profile details</p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;

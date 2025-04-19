@@ -1,16 +1,19 @@
-
-
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Player } from "@lottiefiles/react-lottie-player";
+import SigninAnimation from "../Animations/SigninAnimation.json";
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+
   const images = [
     'https://img.freepik.com/free-vector/letter-concept-illustration_114360-4092.jpg?semt=ais_hybrid&w=740',
     'https://media.istockphoto.com/id/1298159225/vector/broadcasting-with-journalist-or-newscaster.jpg?s=612x612&w=0&k=20&c=RYq-yNo6t3K2p761AUOgrT284CUdIB7XKgn2ppL6608=',
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,7 +34,6 @@ const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { name, email, password, confirmPassword } = formData;
 
     if (!name || !email || !password || !confirmPassword) {
@@ -51,29 +53,48 @@ const SignupPage = () => {
         password,
       });
 
+      setIsLoggedIn(true);
       localStorage.setItem("token", response.data.token);
 
-      const token = localStorage.getItem("token");
+      const token = response.data.token;
 
       const userResponse = await axios.get('http://localhost:8080/api/users/me', {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log(userResponse.data);
-      alert('Signup successful!');
+
+      setTimeout(() => {
+        navigate('/signin');
+      }, 2800);
     } catch (error) {
       console.error(error.response?.data || error.message);
+      setIsLoggedIn(false);
       alert('Signup failed. Try again.');
     }
   };
+
+  if (isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <Player
+          autoplay
+          loop
+          src={SigninAnimation}
+          style={{ height: "200px", width: "200px" }}
+        />
+        <p className="text-blue-600 font-semibold text-lg mt-4">Signing you up...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-[#4169f5] to-[#dbe8ff] flex items-center justify-center px-4">
       <div className="w-full max-w-4xl bg-white rounded-[2rem] flex flex-col md:flex-row overflow-hidden shadow-xl">
 
-        {/* Left Side - Signup */}
+        {/* Left Side - Signup Form */}
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center mb-8 text-[#4169f5]">Sign Up</h2>
 
@@ -124,13 +145,13 @@ const SignupPage = () => {
 
           <p className="text-center text-sm mt-6">
             Already have an account?{' '}
-            <Link to="/Signin" className="text-[#4169f5] font-semibold">
+            <Link to="/signin" className="text-[#4169f5] font-semibold">
               Sign in
             </Link>
           </p>
         </div>
 
-        {/* Right Side - Auto-Sliding Illustration */}
+        {/* Right Side - Image Slider */}
         <div className="hidden md:flex w-1/2 bg-white p-10 flex-col justify-center items-center text-center transition-all duration-500">
           <div className="w-full h-64 mb-8 flex items-center justify-center">
             <img
@@ -140,7 +161,7 @@ const SignupPage = () => {
             />
           </div>
           <h3 className="text-xl font-semibold mb-2 text-[#4169f5]">Join The Community</h3>
-          <p className="text-sm text-gray-500 mb-4">Read Write Summarize In A Go.</p>
+          <p className="text-sm text-gray-500 mb-4">Read, Write, Summarize in a Go.</p>
 
           <div className="flex justify-center space-x-3 mt-2">
             {images.map((_, index) => (

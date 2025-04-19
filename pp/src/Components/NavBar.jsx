@@ -167,11 +167,12 @@
 
 // export default Navbar;
 
-
+import { CgProfile } from "react-icons/cg";
 import React, { useState } from "react";
 import {
   MagnifyingGlassIcon,
   UserCircleIcon,
+  
   Bars3Icon,
 } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
@@ -255,18 +256,19 @@ const NavBar = ({ searchQuery, setSearchQuery })  => {
                 Home
               </Link>
             </li>
-            <li>
+            
+           
+            {isLoggedIn ? (
+              <>
+                 <li>
               <Link to="/AddPostPage" className="text-blue-200 hover:text-white">
                 Post
               </Link>
             </li>
-            {isLoggedIn ? (
-              <>
-                
                 <li>
                   <Link to="/profile">
                     <div className="p-1 rounded-full bg-gray-100 flex items-center justify-center">
-                      <UserCircleIcon className="h-8 w-8 text-blue-500" />
+                      <CgProfile className="h-9 w-9 text-black" />
                     </div>
                   </Link>
                 </li>

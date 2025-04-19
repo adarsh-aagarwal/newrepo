@@ -20,6 +20,7 @@ const ArticlePage = () => {
         const response = await axios.get(`http://localhost:8080/posts/${id}`);
         const blogData = response.data;
         console.log(response);
+        //if(response.data.author.id===)
         
         if (!blogData || !blogData.contentUrl) {
           setError('Blog content not found.');
@@ -44,6 +45,8 @@ const ArticlePage = () => {
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+
+  
 
   return (
     <div className="p-4 sm:p-8 max-w-3xl mx-auto">

@@ -313,6 +313,7 @@ const NavBar = ({ searchQuery, setSearchQuery })  => {
                   >
                     Logout
                   </li>
+                  
                 ) : (
                   <>
                     <li>

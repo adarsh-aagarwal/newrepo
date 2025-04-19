@@ -175,7 +175,8 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("posts");
 
-
+  console.log(token);
+  
   const handleCardClick = (post) => {
     localStorage.setItem("selectedBlog", JSON.stringify(post));
     navigate(`/article/${post.id}`);

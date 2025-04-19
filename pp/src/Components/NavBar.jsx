@@ -179,10 +179,10 @@ import { useAuth } from "../Context/AuthContext";
 import { useBlog } from "../Context/BlogContext";
 import "../App.css";
 
-const Navbar = () => {
+const NavBar = ({ searchQuery, setSearchQuery })  => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  
   const { isLoggedIn, logout } = useAuth();
   const { blogPosts } = useBlog();
   const navigate = useNavigate();
@@ -220,13 +220,13 @@ const Navbar = () => {
         {/* Center - Search bar (Desktop) */}
         <div className="flex-1 hidden md:flex justify-center items-center">
           <div className="flex w-full max-w-md items-center">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full px-4 py-2 rounded-l-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <input
+        type="text"
+        placeholder="Search blog..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full px-4 py-2 rounded-l-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
             <button
               onClick={handleSearch}
               className="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition"
@@ -361,7 +361,7 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavBar;
 
 
 

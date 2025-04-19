@@ -23,13 +23,14 @@ function App() {
           <Route path="/SignUp" element={<SignUp/>}/>
           <Route path="/Signin" element={<SignIn/>}/>
           <Route path="/profile" element={<ProfileP />} />
-          <Route path="/ArticlePage" element={<ArticlePage/>}/>
+          {/* <Route path="/ArticlePage" element={<ArticlePage/>}/> */}
           <Route path="/AddPostPage" element={<AddPostPage/>}/>
           <Route path="/Summarize" element={<Summarize/>}/>
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/search" element={<SearchResults />} />
+          <Route path="/article/:id" element={<ArticlePage />} />
         </Route>
       </Routes>
      

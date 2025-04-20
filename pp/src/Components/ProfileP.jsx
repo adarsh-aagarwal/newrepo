@@ -323,6 +323,7 @@ import {
   ArrowRightOnRectangleIcon,
   EllipsisVerticalIcon
 } from "@heroicons/react/24/outline";
+import ConfirmDeleteModal from "./ConfirmDeleteModal ";
 
 const ProfilePage = () => {
   const { token, logout } = useAuth();
@@ -332,7 +333,8 @@ const ProfilePage = () => {
   const [selectedTab, setSelectedTab] = useState("posts");
   const [activeMenuId, setActiveMenuId] = useState(null);
   const menuRef = useRef(null);
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
 
   const navigate = useNavigate();
 
@@ -376,21 +378,23 @@ const ProfilePage = () => {
     navigate("/signin");
   };
 
-  const handleEdit = (id) => {
-    console.log("Edit", id);
-    // Navigate or open modal for editing
+  const handleEdit = (postId) => {
+    navigate(`/edit-post/${postId}`);
   };
 
   const handleDelete = (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
+    
     axios.
-    delete (`http://localhost:8080/api/posts/${id}`,{
+    delete (`http://localhost:8080/api/posts/${postToDelete.id}`,{
       headers:{
         Authorization: `Bearer ${token}`,
       },
     })
     .then((response)=>{
-      setPosts(posts.filter((post)=>post.id!==id))
+      setPosts(posts.filter((post)=>post.id!==postToDelete.id))
+      
+      setIsModalOpen(false);
+      setPostToDelete(null);
       console.log("post deleted succesfully");
       
     })
@@ -398,8 +402,19 @@ const ProfilePage = () => {
       console.log("error in deleting post",error);
       
     })
+
+   
     
     // Call API or show confirmation
+  };
+  const openModal = (post) => {
+    setPostToDelete(post);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setPostToDelete(null);
   };
 
   return (
@@ -490,17 +505,18 @@ const ProfilePage = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               handleEdit(post.id);
+                              
                             }}
-                            className="block w-full px-4 py-2 text-sm hover:bg-gray-100 text-left"
+                            className="block w-full px-4 py-2 text-sm hover:bg-blue-200 text-left"
                           >
                             Edit
                           </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDelete(post.id);
+                              openModal(post);
                             }}
-                            className="block w-full px-4 py-2 text-sm hover:bg-gray-100 text-left text-red-600"
+                            className="block w-full px-4 py-2 text-sm hover:bg-blue-200 text-left text-red-600"
                           >
                             Delete
                           </button>
@@ -522,6 +538,12 @@ const ProfilePage = () => {
           <p className="text-center text-gray-600">Login to see your profile details</p>
         )}
       </div>
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={handleDelete}
+        postTitle={postToDelete?.title}
+      />
     </div>
   );
 };

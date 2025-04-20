@@ -180,6 +180,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaRegEye, FaRegComment } from "react-icons/fa";
 import { BookmarkIcon } from "@heroicons/react/24/outline";
+import CusButt from "./CusButt";
 
 function BlogCards({ searchQuery }) {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -228,15 +229,15 @@ function BlogCards({ searchQuery }) {
     selectedCategory === "All"
       ? blogPosts
       : blogPosts.filter((post) =>
-          post.description?.toLowerCase().includes(selectedCategory.toLowerCase())
-        );
+        post.description?.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
 
   // Then filter by searchQuery
   const filteredPosts = searchQuery
     ? filteredByCategory.filter((post) =>
-        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.description.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : filteredByCategory;
 
   const timeAgo = (timestamp) => {
@@ -266,9 +267,8 @@ function BlogCards({ searchQuery }) {
                 <li
                   key={index}
                   onClick={() => handleCategoryClick(cat)}
-                  className={`cursor-pointer ${
-                    selectedCategory === cat ? "text-blue-600 font-semibold" : "text-gray-700"
-                  } hover:text-blue-500`}
+                  className={`cursor-pointer ${selectedCategory === cat ? "text-blue-600 font-semibold" : "text-gray-700"
+                    } hover:text-blue-500`}
                 >
                   {cat}
                 </li>
@@ -298,11 +298,30 @@ function BlogCards({ searchQuery }) {
                         src={post.author?.profileImg || "https://i.pravatar.cc/30"}
                         alt={post.author?.name || "Author"}
                         className="w-6 h-6 rounded-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Summarize Clicked");
+                        }}
                       />
-                      <span className="font-medium text-gray-700">{post.author?.name}</span>
+                      <span className="font-medium text-gray-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Summarize Clicked");
+                        }}
+                      >{post.author?.name}</span>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">{post.title}</h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">
+                    <h3 className="text-xl font-semibold text-gray-900"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("Summarize Clicked");
+                      }}
+                    >{post.title}</h3>
+                    <p className="text-gray-600 text-sm line-clamp-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("Summarize Clicked");
+                      }}
+                    >
                       {post.description || "Click to read more..."}
                     </p>
                   </div>
@@ -319,13 +338,20 @@ function BlogCards({ searchQuery }) {
                   {/* Bottom Left: Time, Views, Comments */}
                   <div className="absolute bottom-3 left-5 flex items-center text-gray-500 text-sm gap-4 bg-white/90 px-3 py-1 rounded-full shadow">
                     <span>{timeAgo(post.createdAt)}</span>
-                    <span className="flex items-center gap-1">
-                      <FaRegEye /> {post.views || "0"}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <FaRegComment /> {post.comments || "0"}
-                    </span>
+
                   </div>
+                  <div className="w-full flex justify-center md:absolute md:bottom-5 md:left-[100px] mt-4 md:mt-0 z-10">
+                    <CusButt
+                      label="Summarize"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("Summarize Clicked");
+                      }}
+                    />
+                  </div>
+
+
 
                   {/* Bottom Right: Save Button */}
                   <button
@@ -336,9 +362,8 @@ function BlogCards({ searchQuery }) {
                     className="absolute bottom-3 right-5 bg-white p-2 rounded-full shadow"
                   >
                     <BookmarkIcon
-                      className={`h-5 w-5 ${
-                        savedPosts.includes(post.id) ? "text-blue-600" : "text-gray-800"
-                      }`}
+                      className={`h-5 w-5 ${savedPosts.includes(post.id) ? "text-blue-600" : "text-gray-800"
+                        }`}
                     />
                   </button>
                 </div>

@@ -275,7 +275,13 @@ const NavBar = ({ searchQuery, setSearchQuery })  => {
               </>
             ) : (
               <>
+              <li>
+              <Link to="/signin" className="text-blue-200 hover:text-white">
+                Post
+              </Link>
+            </li>
                 <li>
+
                   <Link to="/signin" className="text-blue-200 hover:text-white">
                     Signin
                   </Link>
@@ -302,18 +308,24 @@ const NavBar = ({ searchQuery, setSearchQuery })  => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/AddPostPage" className="block px-4 py-2 hover:bg-gray-100">
+                  <Link to="/signin" className="block px-4 py-2 hover:bg-gray-100">
                     Post
                   </Link>
                 </li>
                 {isLoggedIn ? (
+                  <>
+                  <li>
+                  <Link to="/AddPostPage" className="block px-4 py-2 hover:bg-gray-100">
+                    Post
+                  </Link>
+                </li>
                   <li
                     onClick={handleLogout}
                     className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   >
                     Logout
                   </li>
-                  
+                  </>
                 ) : (
                   <>
                     <li>

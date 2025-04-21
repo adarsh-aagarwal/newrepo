@@ -330,12 +330,13 @@ const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [posts, setPosts] = useState([]);
+  const [savedPosts,setSavedPosts]=useState([])
   const [selectedTab, setSelectedTab] = useState("posts");
   const [activeMenuId, setActiveMenuId] = useState(null);
   const menuRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -346,6 +347,9 @@ const ProfilePage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(token);
+        console.log(res);
+        
         setUser(res.data);
         setPosts(res.data.posts);
       } catch (err) {
@@ -360,6 +364,30 @@ const ProfilePage = () => {
       setUser(null);
     }
   }, [token]);
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const resp = await axios("http://localhost:8080/api/users/saved-posts", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       console.log("saved resp", resp);
+  //      setSavedPosts(resp.data || []); 
+  //     } catch (error) {
+  //       console.log("error", error);
+  //       setSavedPosts([]); 
+  //     }
+  //   };
+  
+  //   if (token) {
+  //     fetchData();
+  //   } else {
+  //     setSavedPosts([]); 
+  //   }
+  // }, [token]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -380,6 +408,11 @@ const ProfilePage = () => {
 
   const handleEdit = (postId) => {
     navigate(`/edit-post/${postId}`);
+  };
+
+  const handleCardClick = (post) => {
+    localStorage.setItem("selectedBlog", JSON.stringify(post));
+    navigate(`/article/${post.id}`);
   };
 
   const handleDelete = (id) => {
@@ -466,9 +499,10 @@ const ProfilePage = () => {
               </button>
             </div>
 
-            {selectedTab === "posts" && (
+            {selectedTab === "posts" && 
+            (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.length > 0 ? (
+                {Array.isArray(posts) && posts.length > 0 ? (
                   posts.map((post) => (
                     <div
                       key={post.id}
@@ -529,10 +563,34 @@ const ProfilePage = () => {
                 )}
               </div>
             )}
+              
+              {/* {selectedTab === "saved" && (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {Array.isArray(savedPosts) && savedPosts.length > 0 ? (
+      savedPosts.map((post) => (
+        <div
+          key={post.id}
+          onClick={() => handleCardClick(post)}
+          className="relative cursor-pointer bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg"
+        >
+          <img
+            src={post.postImg}
+            alt={post.title}
+            className="w-full h-48 object-cover"
+          />
+          <div className="p-4">
+            <h4 className="text-lg font-semibold">{post.title}</h4>
+            <p className="text-sm text-gray-500">{post.description}</p>
+          </div>
+        </div>
+      ))
+    ) : (
+      <p className="text-center text-gray-500 w-full">No posts yet.</p>
+    )}
+  </div>
+)} */}
 
-            {selectedTab === "saved" && (
-              <div className="text-center text-gray-500">No saved posts yet.</div>
-            )}
+            
           </>
         ) : (
           <p className="text-center text-gray-600">Login to see your profile details</p>
@@ -542,7 +600,8 @@ const ProfilePage = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         onConfirm={handleDelete}
-        postTitle={postToDelete?.title}
+        postTitle={postToDelete?.title || ""}
+
       />
     </div>
   );

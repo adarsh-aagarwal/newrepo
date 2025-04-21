@@ -33,6 +33,7 @@ function App() {
           <Route path="/search" element={<SearchResults />} />
           <Route path="/article/:id" element={<ArticlePage />} />
           <Route path="/edit-post/:postId" element={<EditPage />} />
+          <Route path="/summary" element={<Summarize />} />
         </Route>
       </Routes>
      

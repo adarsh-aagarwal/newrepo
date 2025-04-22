@@ -14,6 +14,7 @@ import Privacy from "./Components/Privacy";
 import ProfileP from "./Components/ProfileP";
 import SearchResults from "./Components/SearchResults";
 import EditPage from "./Components/EditPage"
+import UserProfile from "./Components/UserProfile"
 function App() {
   return (
     
@@ -34,6 +35,7 @@ function App() {
           <Route path="/article/:id" element={<ArticlePage />} />
           <Route path="/edit-post/:postId" element={<EditPage />} />
           <Route path="/summary" element={<Summarize />} />
+          <Route path="/UserProfile" element={<UserProfile/>}/>
         </Route>
       </Routes>
      

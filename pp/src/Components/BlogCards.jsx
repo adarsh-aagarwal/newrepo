@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BookmarkIcon } from "@heroicons/react/24/outline";
 import CusButt from "./CusButt";
+import { BookmarkIcon as BookmarkIconOutline } from "@heroicons/react/24/outline";
+import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
+
 
 function BlogCards({ searchQuery }) {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -99,7 +102,7 @@ function BlogCards({ searchQuery }) {
 
   const handleSavePost = async (postId) => {
     const token = localStorage.getItem("token");
-  
+
     try {
       if (savedPosts.includes(postId)) {
         // Remove the post from saved posts
@@ -122,7 +125,12 @@ function BlogCards({ searchQuery }) {
       console.error("Error saving/removing post:", error);
     }
   };
-  
+  const handleProfileOpener = (post) => {
+    console.log("author", post);
+
+    navigate(`/userProfile`, { state: { post } })
+  }
+
 
   const timeAgo = (timestamp) => {
     const now = new Date();
@@ -188,12 +196,22 @@ function BlogCards({ searchQuery }) {
                   <div className="flex-1 space-y-1 pr-4">
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <img
-                        src={post.author?.profileImg || "https://i.pravatar.cc/30"}
+                        src={post.author?.profileImg || "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"}
                         alt={post.author?.name || "Author"}
                         className="w-6 h-6 rounded-full"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleProfileOpener(post.author);
+                        }}
+
                       />
-                      <span className="font-medium text-gray-700" onClick={(e) => e.stopPropagation()}>
+                      <span className="font-medium text-gray-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleProfileOpener(post.author);
+                        }
+
+                        }>
                         {post.author?.name}
                       </span>
                     </div>
@@ -244,10 +262,12 @@ function BlogCards({ searchQuery }) {
                       className="bg-white p-2 rounded-full shadow-md cursor-pointer hover:scale-110 transition-transform"
                       title={savedPosts.includes(post.id) ? "Unsave Post" : "Save Post"}
                     >
-                      <BookmarkIcon
-                        className={`h-5 w-5 transition-colors duration-200 ${savedPosts.includes(post.id) ? "text-blue-600" : "text-gray-800"
-                          }`}
-                      />
+                      {savedPosts.includes(post.id) ? (
+                        <BookmarkIconSolid className="h-5 w-5 text-blue-600 transition-colors duration-200" />
+                      ) : (
+                        <BookmarkIconOutline className="h-5 w-5 text-gray-800 transition-colors duration-200" />
+                      )}
+
                     </div>
                   </div>
                 </div>
